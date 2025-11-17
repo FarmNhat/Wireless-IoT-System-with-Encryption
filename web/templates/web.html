@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SSE Float Demo</title>
+</head>
+<body>
+  <h1>Nhiệt độ cây: </h1>
+  <div id="value" style="font-size:2rem;">–</div>
+
+  <script>
+    const evtSource = new EventSource("/stream");
+    const valueDiv = document.getElementById("value");
+
+    evtSource.onmessage = function(e) {
+      // e.data là string — nếu cần parse float: parseFloat(e.data)
+      valueDiv.textContent = parseFloat(e.data).toFixed(3);
+    };
+
+    evtSource.onerror = function(e) {
+      console.error("EventSource error:", e);
+      valueDiv.textContent = "Kết nối lỗi";
+    };
+  </script>
+</body>
+</html>
