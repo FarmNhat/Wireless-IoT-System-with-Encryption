@@ -3,9 +3,10 @@
 #include <Arduino.h>
 #include "stdlib.h"
 #include "string.h"
-
 #include <WiFi.h>
 #include <PubSubClient.h>
+
+//#define DEBUG
 
 const char* ssid = "Minh Nhat";
 const char* password = "14231009";
@@ -35,20 +36,21 @@ void connectMQTT() {
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
     } else {
-      
       Serial.println(" try again in 2s");
       delay(2000);
     }
   }
 }
 
+////////// DEFINE O DAY NE AE //////////////
 
- 
-uint8_t output36 [36];
-void sha2(float value) {
-   uint8_t input[4];
+uint8_t output36 [44];
+void sha2(float soil, float temp, float hum) {
+   uint8_t input[12];
 
-  memcpy(input, &value, sizeof(value));
+  memcpy(input + 0, &soil, 4);
+  memcpy(input + 4, &temp, 4);
+  memcpy(input + 8, &hum, 4);
   //memcpy(, hash32, 32);
   uint8_t output32 [32];
 
@@ -58,34 +60,49 @@ void sha2(float value) {
   mbedtls_sha256_update_ret(&ctx, input, sizeof(input));
   mbedtls_sha256_finish_ret(&ctx, output32);
 
-  memcpy(output36, input, 4);
-  memcpy(output36 + 4, output32, 32);
+  memcpy(output36, input, 12);
+  memcpy(output36 + 12, output32, 32);
 
-  Serial.print("Value: ");
-  Serial.println(value, 2);
+#ifdef DEBUG
+  Serial.print("soil: ");
+  Serial.print(soil, 2);
+  Serial.print(" ");
 
-  for (int i = 0; i < 36; i++) {
+  Serial.print("temp: ");
+  Serial.print(temp, 2);
+  Serial.print(" ");
+
+  Serial.print("hum: ");
+  Serial.print(hum, 2);
+  Serial.print(" ");
+
+  Serial.println("");
+
+  for (int i = 0; i < 44; i++) {
     Serial.printf("%02X", output36[i]);
   }
   Serial.print("\n");
+  #endif
   delay(4000);
 }
 
+//[0…11]   → 12 byte = 3 float (soil, temp, hum) liên tiếp (mỗi float 4 byte)
+//[12…43]  → 32 byte = SHA-256 của 12 byte trên
+
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
   delay(100);
   connectWiFi();
   client.setServer(MQTT_SERVER, MQTT_PORT);
-  //randomSeed(micros());
 }
 
 void loop() {
   // cryto part
-  float value = random(1000, 9999) / 100.0;
-  
+  float soil = random(1000, 9999) / 100.0;
+  float temp = random(1000, 9999) / 100.0;
+  float hum = random(1000, 9999) / 100.0;
 
-  sha2(value);
+  sha2(soil, temp, hum);
 
   if (!client.connected()) {
     connectMQTT();
@@ -95,7 +112,7 @@ void loop() {
   static unsigned long lastMsg = 0;
   if (millis() - lastMsg > 1000) {
     lastMsg = millis();
-    client.publish("esp32/test", output36, 36);
+    client.publish("esp32/test", output36, 44);
   }
 }
 
