@@ -1,0 +1,1 @@
+"{\n  \"device_id\": \"esp32_001\",\n  \"data\": {\n    \"soil\": 33.08,\n    \"temp\": 92.26,\n    \"hum\": 84.03\n  },\n  \"hash\": \"236ea0a9a0b69d6c2afc4784aa8893292905583151b187c06af23445e69dd7ad\"\n}"
