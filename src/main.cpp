@@ -14,7 +14,7 @@ PubSubClient client(espClient);
 
 // 3 BIEN NAY DUNG DE DIEU KHIEN PUMP //
 uint8_t pump_control = 0; // ON - OFF
-uint32_t duration = 0; // THOI GIAN HOAT DONG
+uint32_t duration = 0; // THOI GIAN HOAT DONG (seconds)
 uint8_t mode = 0; // CHE DO LAM VIEC AUTO - MANUAL
 
 // =====================================================
