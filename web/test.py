@@ -38,19 +38,20 @@ def on_message(client, userdata, msg):
 
     b4 = payload[:12]
     global value 
-    soil, temp, hum = struct.unpack('<fff', b4)
+    soil, temp, hum, flow = struct.unpack('<fff', b4)
    
     if len(payload) >= 44:
         recv_hash = payload[12:44]
         calc_hash = hashlib.sha256(b4).digest()
         if (calc_hash == recv_hash):
-            print("soil: ", soil," temp: ", temp, " hum: ", hum)
+            print("soil: ", soil," temp: ", temp, " hum: ", hum, " flow: ", flow)
             result = {
                 "device_id": DEVICE_ID,
                 "data": {
                     "soil": round(soil, 2),      
                     "temp": round(temp, 2),
                     "hum": round(hum, 2),
+                    "flow": round(flow, 2)
                 },
                 "hash": hashlib.sha256(b4).hexdigest()   
             }
