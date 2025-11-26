@@ -45,12 +45,13 @@ void connectMQTT() {
 ////////// DEFINE O DAY NE AE //////////////
 
 uint8_t output36 [44];
-void sha2(float soil, float temp, float hum) {
+void sha2(float soil, float temp, float hum, float flow) {
    uint8_t input[12];
 
   memcpy(input + 0, &soil, 4);
   memcpy(input + 4, &temp, 4);
   memcpy(input + 8, &hum, 4);
+  memccpy(input + 12, &flow, 4);
   //memcpy(, hash32, 32);
   uint8_t output32 [32];
 
@@ -75,6 +76,10 @@ void sha2(float soil, float temp, float hum) {
   Serial.print("hum: ");
   Serial.print(hum, 2);
   Serial.print(" ");
+
+  Serial.print("flow: ");
+  Serial.print(flow, 2);
+  Serial.println(" ");
 
   Serial.println("");
 
@@ -101,11 +106,19 @@ void loop() {
   float soil = random(1000, 9999) / 100.0;
   float temp = random(1000, 9999) / 100.0;
   float hum = random(1000, 9999) / 100.0;
+  float flow = random(1000, 9999) / 100.0;
 
-  sha2(soil, temp, hum);
+  sha2(soil, temp, hum, flow);
 
   if (!client.connected()) {
-    connectMQTT();
+    connectMQTT();            save_to_json(result)
+        else:
+            print("Hash mismatch!")
+    else:
+        print("No hash provided")
+
+client = mqtt.Client()
+client.on_connect = on_connect
   }
   client.loop();
 
